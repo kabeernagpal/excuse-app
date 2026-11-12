@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Excuse Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f1ff;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .card {
+      background: #fff;
+      padding: 28px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+    }
+    h1 { margin-top: 0; font-size: 26px; }
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      box-sizing: border-box;
+      margin-bottom: 12px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background: #6c4cf1;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover { background: #5538d6; }
+    #for { margin: 20px 0 4px; color: #888; font-size: 14px; }
+    #result { font-size: 18px; font-weight: bold; min-height: 50px; }
+    .footer { margin-top: 20px; font-size: 12px; color: #999; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Excuse Generator</h1>
+    <p>Missed class? Late submission? We've got you.</p>
+
+    <input id="name" type="text" placeholder="Enter your name" maxlength="30">
+    <button onclick="getExcuse()">Generate Excuse</button>
+
+    <p id="for"></p>
+    <p id="result"></p>
+
+    <div class="footer">
+      Visits since last restart: {{ visits }} | Environment: {{ env }}
+    </div>
+  </div>
+
+  <script>
+    async function getExcuse() {
+      const name = document.getElementById("name").value;
+      const forEl = document.getElementById("for");
+      const resultEl = document.getElementById("result");
+
+      resultEl.textContent = "Thinking of a good lie...";
+      forEl.textContent = "";
+
+      try {
+        const res = await fetch("/api/excuse?name=" + encodeURIComponent(name));
+        const data = await res.json();
+        forEl.textContent = "Excuse for " + data.name + ":";
+        resultEl.textContent = data.excuse;
+      } catch (err) {
+        resultEl.textContent = "Something broke. Check the logs!";
+      }
+    }
+
+    document.getElementById("name").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") getExcuse();
+    });
+  </script>
+</body>
+</html>
